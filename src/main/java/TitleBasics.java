@@ -79,7 +79,23 @@ public class TitleBasics {
         }
     }
 
-    public void insertIntoTitleGenre(String sql_table, String titleID, String genreID){
-        
+    public void insertIntoTitleGenre(String sql_table, String titleID, int genreID){
+        try{
+            connect = DriverManager.getConnection(url, user, pass);
+            statement = connect.createStatement();
+
+            PreparedStatement preparedStatement = connect.prepareStatement("INSERT INTO `" + sql_table +
+                    "`(titleID, genreID) " +
+                    "VALUES (?, ?)");
+
+            preparedStatement.setString(1, titleID);
+            preparedStatement.setInt(2, genreID);
+
+            preparedStatement.executeUpdate();
+            connect.close();
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
     }
 }

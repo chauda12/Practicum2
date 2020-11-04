@@ -10,6 +10,8 @@ public class InsertNameBasics{
         Name nameInsertion = new Name();
         String person_table = "person";
         String known_table = "knownFor";
+        String personProfession_table = "personProfession";
+        String profession_table = "profession";
 
         BufferedReader TSVFile = new BufferedReader(new FileReader("name.basics.tsv"));
         String[] dataArray;
@@ -20,13 +22,18 @@ public class InsertNameBasics{
         for(int i = 0; i < 10; i++) {
             dataArray = dataRow.split("\t");
 
+             /*
+            for(String element: dataArray){
+                System.out.println(element);
+            }
+             */
+
             // Insertion into person
             if (dataArray[3].equals("\\N")) {
                 nameInsertion.insertIntoPerson(person_table, dataArray[0], dataArray[1], Integer.parseInt(dataArray[2]), NULL);
             }
 
             else {
-                System.out.println(dataArray[2]);
                 nameInsertion.insertIntoPerson(person_table, dataArray[0], dataArray[1], Integer.parseInt(dataArray[2]), Integer.parseInt(dataArray[3]));
             }
 
@@ -36,6 +43,21 @@ public class InsertNameBasics{
                 for(String title: titleArray){
                     nameInsertion.insertIntoKnownFor(known_table, dataArray[0], title);
                 }
+            }
+
+            // Insert into genre tables
+            String[] professionArray = dataArray[4].split(",");
+            for(String profession: professionArray){
+
+                // Check to see if genre already exists in table
+                if(nameInsertion.lookupProfession(profession_table, profession) == 0) {
+
+                    // Genre does not exist, create a row in genre table
+                    nameInsertion.insertIntoProfession(profession_table, profession);
+                }
+
+                nameInsertion.insertIntoPersonProfession(personProfession_table, dataArray[0],
+                        nameInsertion.lookupProfession(profession_table, profession));
             }
 
             dataRow = TSVFile.readLine();

@@ -1,7 +1,4 @@
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Statement;
+import java.sql.*;
 
 public class Name {
 
@@ -35,8 +32,28 @@ public class Name {
         }
     }
 
-    public void insertIntoProfession(String sql_table, String professionText){
+    public int lookupProfession(String sql_table, String professionText) {
+        try {
+            connect = DriverManager.getConnection(url, user, pass);
+            statement = connect.createStatement();
 
+            String statement = "SELECT professionID FROM profession WHERE professionText = ?";
+            PreparedStatement preparedStatement = connect.prepareStatement(statement);
+            preparedStatement.setString(1, professionText);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if(resultSet.next()){
+                return resultSet.getInt(1);
+            }
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+
+        return 0;
+    }
+
+    public void insertIntoProfession(String sql_table, String professionText){
         try{
             connect = DriverManager.getConnection(url, user, pass);
             statement = connect.createStatement();
@@ -46,6 +63,26 @@ public class Name {
                     "VALUES (?)");
 
             preparedStatement.setString(1, professionText);
+
+            preparedStatement.executeUpdate();
+            connect.close();
+
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+    }
+
+    public void insertIntoPersonProfession(String sql_table, String personID, int professionID){
+        try{
+            connect = DriverManager.getConnection(url, user, pass);
+            statement = connect.createStatement();
+
+            PreparedStatement preparedStatement = connect.prepareStatement("INSERT INTO `" + sql_table +
+                    "`(personID, professionID) " +
+                    "VALUES (?, ?)");
+
+            preparedStatement.setString(1, personID);
+            preparedStatement.setInt(2, professionID);
 
             preparedStatement.executeUpdate();
             connect.close();
