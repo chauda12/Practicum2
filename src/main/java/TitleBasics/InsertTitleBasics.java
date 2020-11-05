@@ -76,6 +76,8 @@ public class InsertTitleBasics{
     public static void main(String[] arg) throws Exception {
 
         InsertTitleBasics insertTitleBasics = new InsertTitleBasics();
+        insertTitleBasics.insertData("C:\\\\Users\\\\Matthew Chau\\\\Desktop\\\\Practicum2\\\\title_basic_split\\\\2title.basics.tsv");
+        /*
         while (counter <= 3045) {
 
             String header = "C:\\Users\\Matthew Chau\\Desktop\\Practicum2\\title_basic_split\\";
@@ -88,5 +90,6 @@ public class InsertTitleBasics{
             System.out.println("Done with " + counter);
             counter++;
         }
+         */
     }
 }
