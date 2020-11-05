@@ -43,7 +43,8 @@ public class Name {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet.next()){
-                return resultSet.getInt(1);
+                int result = resultSet.getInt(1);
+                connect.close();
             }
 
         } catch (Exception e) {

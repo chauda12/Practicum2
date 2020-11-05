@@ -1,3 +1,5 @@
+package TitleBasics;
+
 import java.sql.*;
 
 public class TitleBasics {
@@ -35,6 +37,7 @@ public class TitleBasics {
             connect.close();
 
         } catch (Exception e) {
+            System.out.println(titleID + titleType + primaryTitle + originalTitle + isAdult + startYear + endYear + runtimeMinutes);
             System.err.println(e.getMessage());
         }
     }
@@ -50,8 +53,12 @@ public class TitleBasics {
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if(resultSet.next()){
-                return resultSet.getInt(1);
+                int result = resultSet.getInt(1);
+                connect.close();
+                return result;
             }
+
+            connect.close();
 
         } catch (Exception e) {
             System.err.println(e.getMessage());
