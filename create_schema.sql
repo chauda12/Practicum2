@@ -4,8 +4,8 @@ Create Table title (
     primaryTitle longtext,
     originalTitle longtext,
     isAdult boolean,
-    startYear year,
-    endYear year,
+    startYear int,
+    endYear int,
     runtimeMinutes int,
     Constraint PK_titleID Primary Key (titleID)
 );
@@ -88,8 +88,8 @@ Create Table titleAttribute (
 Create Table person (
 	personID varchar(40),
     primaryName longtext,
-    birthYear year,
-    deathYear year,
+    birthYear int,
+    deathYear int,
     Constraint PK_personID Primary Key (personID)
 );
 

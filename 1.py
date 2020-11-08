@@ -4,8 +4,6 @@ import sqlite3
 import pymysql
 from sqlalchemy import create_engine
 
-
-
 def insertTitleBasic():
     file = 'title.basics.tsv'
 
@@ -24,7 +22,7 @@ def insertTitleBasic():
         print('| index: {}'.format(j))
 
 def insertAkas():
-    file = 'title.akas.tsv'
+    file = 'akas.tsv'
 
     csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
     dbConnection = csv_database.connect()
@@ -41,7 +39,7 @@ def insertAkas():
         print('| index: {}'.format(j))
 
 def insertCrew():
-    file = 'title.crew.tsv'
+    file = 'crew.tsv'
 
     csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
     dbConnection = csv_database.connect()
@@ -58,7 +56,7 @@ def insertCrew():
         print('| index: {}'.format(j))
 
 def insertEpisode():
-    file = 'title.episode.tsv'
+    file = 'episodes.tsv'
 
     csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
     dbConnection = csv_database.connect()
@@ -75,7 +73,7 @@ def insertEpisode():
         print('| index: {}'.format(j))
 
 def insertPrincipals():
-    file = 'title.principals.tsv'
+    file = 'principals.tsv'
 
     csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
     dbConnection = csv_database.connect()
@@ -93,7 +91,7 @@ def insertPrincipals():
 
 
 def insertRatings():
-    file = 'title.ratings.tsv'
+    file = 'ratings.tsv'
 
     csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
     dbConnection = csv_database.connect()
@@ -127,7 +125,7 @@ def insertNames():
         print('| index: {}'.format(j))
 
 def main():
-    
+    insertPrincipals()
     insertNames()
-
+    insertTitleBasic()
 main()
