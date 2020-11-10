@@ -14,7 +14,7 @@ def insertTitleBasic():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('title_tsv', dbConnection, if_exists='append')
@@ -31,7 +31,7 @@ def insertAkas():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('akas_tsv', dbConnection, if_exists='append')
@@ -48,7 +48,7 @@ def insertCrew():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('crew_tsv', dbConnection, if_exists='append')
@@ -65,7 +65,7 @@ def insertEpisode():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('episode_tsv', dbConnection, if_exists='append')
@@ -82,7 +82,7 @@ def insertPrincipals():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('principals_tsv', dbConnection, if_exists='append')
@@ -100,7 +100,7 @@ def insertRatings():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('ratings_tsv', dbConnection, if_exists='append')
@@ -117,7 +117,7 @@ def insertNames():
     i = 0
     j = 0
 
-    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t'):
+    for df in pd.read_csv(file, chunksize=chunksize, iterator=True, delimiter='\t', dtype='string', na_values='\\N'):
         df = df.rename(columns = {c: c.replace(' ', '') for c in df.columns})
         df.index += j
         df.to_sql('name_tsv', dbConnection, if_exists='append')
