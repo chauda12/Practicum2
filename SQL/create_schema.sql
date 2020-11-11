@@ -3,7 +3,7 @@ Create Table title (
     titleType longtext,
     primaryTitle longtext,
     originalTitle longtext,
-    isAdult boolean,
+    isAdult bool,
     startYear int,
     endYear int,
     runtimeMinutes int,
@@ -26,7 +26,7 @@ Create Table titleGenre (
 );
 
 Create Table episode (
-	episodeID varchar(40),
+	episodeID int AUTO_INCREMENT,
     titleID varchar(40),
     seasonNumber int,
     episodeNumber int,
@@ -41,6 +41,19 @@ Create Table rating (
     numVotes int,
     Constraint PK_ratingID Primary Key (ratingID),
     Constraint FK_titleID_r Foreign Key (titleID) References title(titleID)
+);
+
+/* akas */
+Create Table titleInfo (
+	titleInfoID int AUTO_INCREMENT,
+	titleID varchar(40),
+    ordering int,
+    title longtext,
+    region varchar(40),
+    language varchar(40),
+    isOriginalTitle bool,
+    Constraint PK_titleInfoID Primary Key (titleInfoID),
+    Constraint FK_titleID_t Foreign Key (titleID) REFERENCES title(titleID)
 );
 
 Create Table titleInfo (
@@ -121,14 +134,14 @@ Create Table crew (
 	crewID int AUTO_INCREMENT,
     personID varchar(40),
     titleID varchar(40),
-    job boolean, 
+    job boolean,
 	Constraint PK_crewID Primary Key (crewID),
     Constraint FK_personID_c Foreign Key (personID) References person(personID),
 	Constraint FK_titleID_c Foreign Key (titleID) References title(titleID)
 );
 
 Create Table principals (
-	principalID int,
+	principalID int AUTO_INCREMENT,
     titleID varchar(40),
     ordering int,
     personID varchar(40),
@@ -140,5 +153,11 @@ Create Table principals (
 	Constraint FK_personID_p Foreign Key (personID) References person(personID)
 );
 
+Create Table genrehelper (
+	tconst varchar(40),
+    genre1 varchar(40),
+    genre2 varchar(40),
+    genre3 varchar(40)
+);
 
-    
+

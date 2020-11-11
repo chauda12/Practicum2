@@ -4,10 +4,12 @@ import sqlite3
 import pymysql
 from sqlalchemy import create_engine
 
+database = 'mysql+pymysql://root:5DL5oYhn5a2G@127.0.0.1/practicum2'
+
 def insertTitleBasic():
     file = 'title.basics.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -21,10 +23,14 @@ def insertTitleBasic():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
+
 def insertAkas():
     file = 'akas.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -38,10 +44,13 @@ def insertAkas():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
 def insertCrew():
     file = 'crew.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -55,10 +64,13 @@ def insertCrew():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
 def insertEpisode():
     file = 'episodes.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -72,10 +84,13 @@ def insertEpisode():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
 def insertPrincipals():
     file = 'principals.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -89,11 +104,14 @@ def insertPrincipals():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
 
 def insertRatings():
     file = 'ratings.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -107,10 +125,13 @@ def insertRatings():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
 def insertNames():
     file = 'name.basics.tsv'
 
-    csv_database = create_engine('mysql+pymysql://root@127.0.0.1/practicum2')
+    csv_database = create_engine(database)
     dbConnection = csv_database.connect()
 
     chunksize = 10000
@@ -124,8 +145,17 @@ def insertNames():
         j = df.index[-1]+1
         print('| index: {}'.format(j))
 
+        if (j > 280000):
+            break
+
 def main():
+    #insertTitleBasic()
+    #insertAkas()
+    #insertNames()
+    #insertRatings()
+    #insertEpisode()
     insertPrincipals()
-    insertNames()
-    insertTitleBasic()
+    #insertCrew()
+    
+    
 main()
