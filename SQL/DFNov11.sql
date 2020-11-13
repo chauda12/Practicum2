@@ -153,6 +153,66 @@ Create Table crew (
 );
 /********************************************************************************************************************************/
 
+/*********** attribute // titleAttribute *************/
+Create Table attribute (
+	attributeID int,
+    attributeText varchar(50),
+    Constraint PK_attributeID Primary Key (attributeID)
+);
+
+Create Table titleAttribute (
+	titleAttributeID int,
+    titleInfoID int,
+    attributeID int,
+    Constraint PK_titleAttributeID Primary Key (titleAttributeID),
+    Constraint FK_titleInfoID_ta Foreign Key (titleInfoID) REFERENCES titleInfo(titleInfoID),
+	Constraint FK_attributeID_ta Foreign Key (attributeID) REFERENCES attribute(attributeID)
+);
+
+/*transfer data from tsv to newly corrected table */
+INSERT INTO attribute (attributeText)
+SELECT DISTINCT Akas.attributes
+FROM akas_tsv AS Akas
+WHERE NOT EXISTS (SELECT * FROM attribute AS A WHERE A.attributeText = Akas.attributes);
+
+INSERT INTO titleAttribute(titleInfoID, attributeID)
+SELECT Ti.titleInfoID, A.attributeID
+FROM attribute AS A, titleInfo AS Ti, akas_tsv AS Akas
+WHERE Akas.titleID = Ti.titleID
+AND Akas.ordering = Ti.ordering
+AND A.attributeText = Akas.attributes;
+/********************************************************************************************************************************/
+
+/*********** mediaType // titleMediaType *************/
+Create Table mediaType (
+	mediaTypeID int,
+    mediaTypeText varchar(50),
+    Constraint PK_mediaTypeID Primary Key (mediaTypeID)
+);
+
+Create Table titleMediaType (
+	titleMediaTypeID int,
+    titleInfoID int,
+    mediaTypeID int,
+    Constraint PK_titleMediaTypeID Primary Key (titleMediaTypeID),
+    Constraint FK_titleInfoID_tit Foreign Key (titleInfoID) REFERENCES titleInfo(titleInfoID),
+	Constraint FK_mediaTypeID_tit Foreign Key (mediaTypeID) REFERENCES mediaType(mediaTypeID)
+);
+
+/*transfer data from tsv to newly corrected table */
+INSERT INTO mediaType (mediaTypeText)
+SELECT DISTINCT Akas.types
+FROM akas_tsv AS Akas
+WHERE NOT EXISTS (SELECT * FROM mediaType AS Mt WHERE A.mediaTypeText = Akas.types);
+
+INSERT INTO titleMediaType(titleInfoID, mediaTypeID)
+SELECT Ti.titleInfoID, Mt.mediaTypeID
+FROM mediaType AS Mt, titleInfo AS Ti, akas_tsv AS Akas
+WHERE Akas.titleID = Ti.titleID
+AND Akas.ordering = Ti.ordering
+AND Mt.mediaTypeText = Akas.types;
+/********************************************************************************************************************************/
+
 /*********** KnownFor *************/
 Create Table knownforhelper (
 	nconst varchar(40),
