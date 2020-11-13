@@ -42,4 +42,4 @@ SELECT DISTINCT GH.tconst, G.genreID
 FROM genrehelper AS GH, genres AS G
 WHERE NOT EXISTS (SELECT TG.titleID, TG.genreID FROM genres AS G, titlegenre AS TG
                   WHERE G.genreID = TG.genreID AND  GH.tconst = TG.titleID)
-AND G.genreText = GH.genre3
+AND G.genreText = GH.genre3;
