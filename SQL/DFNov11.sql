@@ -47,8 +47,8 @@ Create Table titleInfo (
 
 /*transfer data from tsv to newly corrected table */
 INSERT INTO titleInfo (titleID, ordering, title, region, language, isOriginalTitle)
-SELECT titleID, ordering, title, region, language, isOriginalTitle
-FROM akas_tsv;
+SELECT atsv.titleID, ordering, title, region, language, isOriginalTitle
+FROM akas_tsv atsv INNER JOIN title t ON atsv.titleID = t.titleID;
 
 SELECT * FROM titleInfo;
 DESCRIBE titleInfo;
@@ -135,66 +135,284 @@ FROM principals_tsv ptsv INNER JOIN title t ON ptsv.tconst = t.titleID INNER JOI
 SELECT * FROM principals;
 /********************************************************************************************************************************/
 
-/**TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO**/
-/**TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO**/
-/**TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO****TO*DO**/
-/* TO DO: insert data into crew table. i'm confused by the job field */
-/*********** Crew *************/
+/*********** Crew - Crew/Director - Crew/Writer *************/
 SELECT * FROM crew_tsv;
 
 Create Table crew (
 	crewID int AUTO_INCREMENT,
-    personID varchar(40),
-    titleID varchar(40),
-    job boolean,
+	titleID varchar(40),
 	Constraint PK_crewID Primary Key (crewID),
-    Constraint FK_personID_c Foreign Key (personID) References person(personID),
 	Constraint FK_titleID_c Foreign Key (titleID) References title(titleID)
 );
+
+INSERT INTO crew (titleID)
+SELECT tconst FROM crew_tsv;
+
+SELECT * FROM crew;
+
+Create Table crewhelper (
+	crewId varchar(40),
+    director1 varchar(40),
+	director2 varchar(40),
+    director3 varchar(40),
+    writer1 varchar(40),
+	writer2 varchar(40),
+    writer3 varchar(40)
+);
+
+INSERT INTO crewhelper(crewId, director1, director2, director3, writer1, writer2, writer3)
+SELECT crewId, SUBSTRING_INDEX(directors, ',', 1) AS director1,
+SUBSTRING_INDEX(SUBSTRING_INDEX(directors, ',', 2), ',', -1) AS director2,
+SUBSTRING_INDEX(directors, ',', -1) AS director3,
+SUBSTRING_INDEX(writers, ',', 1) AS writer1,
+SUBSTRING_INDEX(SUBSTRING_INDEX(writers, ',', 2), ',', -1) AS writer2,
+SUBSTRING_INDEX(writers, ',', -1) AS writer3
+FROM crew_tsv JOIN title ON crew_tsv.tconst = title.titleId JOIN crew ON crew_tsv.tconst = crew.titleId;
+
+SELECT * FROM crewhelper;
+
+/* director */
+
+Create Table directors (
+	directorID varchar(40),
+    Constraint directorID Primary Key (directorID)
+);
+
+INSERT INTO directors(directorID)
+SELECT DISTINCT CH.director1
+FROM crewhelper AS CH
+WHERE CH.director1 IS NOT NULL AND
+NOT EXISTS (SELECT * FROM directors AS D WHERE D.directorId = CH.director1);
+
+INSERT INTO directors(directorID)
+SELECT DISTINCT CH.director2
+FROM crewhelper AS CH
+WHERE CH.director2 IS NOT NULL AND
+NOT EXISTS (SELECT * FROM directors AS D WHERE D.directorId = CH.director2);
+
+INSERT INTO directors(directorID)
+SELECT DISTINCT CH.director3
+FROM crewhelper AS CH
+WHERE CH.director3 IS NOT NULL AND
+NOT EXISTS (SELECT * FROM directors AS D WHERE D.directorId = CH.director3);
+
+SELECT * FROM directors;
+
+Create Table crewDirector (
+	crewDirectorID int AUTO_INCREMENT,
+    crewID int,
+    DirectorID varchar(40),
+    Constraint PK_crewDirectorID Primary Key (crewDirectorID),
+    Constraint FK_crewID_cd Foreign Key (crewID) References crew(crewID),
+	Constraint FK_DirectorID_cd Foreign Key (DirectorID) References directors(DirectorID)
+);
+
+INSERT INTO crewDirector(crewId, directorID)
+SELECT DISTINCT crewId, director1
+FROM crewhelper
+WHERE director1 IS NOT NULL AND
+NOT EXISTS (SELECT crewId, directorID FROM crewDirector WHERE directorID = crewhelper.director1);
+SELECT * FROM crewDirector;
+
+INSERT INTO crewDirector(crewId, directorID)
+SELECT DISTINCT crewId, director2
+FROM crewhelper
+WHERE director1 IS NOT NULL AND
+NOT EXISTS (SELECT crewId, directorID FROM crewDirector WHERE directorID = crewhelper.director2);
+SELECT * FROM crewDirector;
+
+INSERT INTO crewDirector(crewId, directorID)
+SELECT DISTINCT crewId, director3
+FROM crewhelper
+WHERE director1 IS NOT NULL AND
+NOT EXISTS (SELECT crewId, directorID FROM crewDirector WHERE directorID = crewhelper.director3);
+SELECT * FROM crewDirector;
+
+SELECT * from crewDirector;
+
+/* writer */
+
+Create Table writers (
+	writerID varchar(40),
+    Constraint writerID Primary Key (writerID)
+);
+
+INSERT INTO writers(writerID)
+SELECT DISTINCT CH.writer1
+FROM crewhelper AS CH
+WHERE CH.writer1 IS NOT NULL AND
+NOT EXISTS (SELECT * FROM writers AS W WHERE W.writerId = CH.writer1);
+
+INSERT INTO writers(writerID)
+SELECT DISTINCT CH.writer2
+FROM crewhelper AS CH
+WHERE CH.writer2 IS NOT NULL AND
+NOT EXISTS (SELECT * FROM writers AS W WHERE W.writerId = CH.writer2);
+
+INSERT INTO writers(writerID)
+SELECT DISTINCT CH.writer3
+FROM crewhelper AS CH
+WHERE CH.writer3 IS NOT NULL AND
+NOT EXISTS (SELECT * FROM writers AS W WHERE W.writerId = CH.writer3);
+
+SELECT * FROM writers;
+
+Create Table crewwriter (
+	crewwriterID int AUTO_INCREMENT,
+    crewID int,
+    writerID varchar(40),
+    Constraint PK_crewwriterID Primary Key (crewwriterID),
+    Constraint FK_crewID_cw Foreign Key (crewID) References crew(crewID),
+	Constraint FK_writerID_cw Foreign Key (writerID) References writers(writerID)
+);
+
+INSERT INTO crewwriter(crewId, writerID)
+SELECT DISTINCT crewId, writer1
+FROM crewhelper
+WHERE writer1 IS NOT NULL AND
+NOT EXISTS (SELECT crewId, writerID FROM crewwriter WHERE writerID = crewhelper.writer1);
+SELECT * FROM crewwriter;
+
+INSERT INTO crewwriter(crewId, writerID)
+SELECT DISTINCT crewId, writer2
+FROM crewhelper
+WHERE writer1 IS NOT NULL AND
+NOT EXISTS (SELECT crewId, writerID FROM crewwriter WHERE writerID = crewhelper.writer2);
+SELECT * FROM crewwriter;
+
+INSERT INTO crewwriter(crewId, writerID)
+SELECT DISTINCT crewId, writer3
+FROM crewhelper
+WHERE writer1 IS NOT NULL AND
+NOT EXISTS (SELECT crewId, writerID FROM crewwriter WHERE writerID = crewhelper.writer3);
+SELECT * FROM crewwriter;
+
+SELECT * from crewwriter;
 /********************************************************************************************************************************/
 
-/*********** attribute // titleAttribute *************/
-Create Table attribute (
-	attributeID int,
-    attributeText varchar(50),
+/*********** Attribute, titleAttribute, AttributeHelper *************/
+SELECT * FROM titleInfo;
+SELECT * FROM akas_tsv;
+
+Create Table attributehelper (
+	titleInfoId varchar(40),
+    attribute1 varchar(40),
+    attribute2 varchar(40),
+    attribute3 varchar(40)
+);
+
+INSERT INTO attributehelper(titleInfoId, attribute1, attribute2, attribute3)
+SELECT titleInfoId, SUBSTRING_INDEX(attributes, ' ', 1) AS attribute1,
+SUBSTRING_INDEX(SUBSTRING_INDEX(attributes, ' ', 2), ' ', -1) AS attribute2,
+SUBSTRING_INDEX(attributes, ' ', -1) AS attribute3
+FROM akas_tsv JOIN titleInfo ON akas_tsv.titleID = titleInfo.titleId;
+
+SELECT * FROM attributehelper;
+
+Create Table attributes (
+	attributeID int AUTO_INCREMENT,
+	attributeText varchar(40),
     Constraint PK_attributeID Primary Key (attributeID)
 );
 
-Create Table titleAttribute (
-	titleAttributeID int,
+INSERT INTO attributes(attributeText)
+SELECT DISTINCT AH.attribute1
+FROM attributehelper AS AH
+WHERE NOT EXISTS (SELECT * FROM attributes AS A WHERE A.attributeText = AH.attribute1);
+
+INSERT INTO attributes(attributeText)
+SELECT DISTINCT AH.attribute2
+FROM attributehelper AS AH
+WHERE NOT EXISTS (SELECT * FROM attributes AS A WHERE A.attributeText = AH.attribute2);
+
+INSERT INTO attributes(attributeText)
+SELECT DISTINCT AH.attribute3
+FROM attributehelper AS AH
+WHERE NOT EXISTS (SELECT * FROM attributes AS A WHERE A.attributeText = AH.attribute3);
+
+SELECT * FROM attributes;
+
+Create Table titleInfoAttribute (
+	titleInfoAttributeID int AUTO_INCREMENT,
     titleInfoID int,
     attributeID int,
-    Constraint PK_titleAttributeID Primary Key (titleAttributeID),
-    Constraint FK_titleInfoID_ta Foreign Key (titleInfoID) REFERENCES titleInfo(titleInfoID),
-	Constraint FK_attributeID_ta Foreign Key (attributeID) REFERENCES attribute(attributeID)
+    Constraint PK_titleInfoAttributeID Primary Key (titleInfoAttributeID),
+    Constraint FK_titleInfoID_tia Foreign Key (titleInfoID) References titleInfo(titleInfoID),
+	Constraint FK_attributeID_tia Foreign Key (attributeID) References attributes(attributeID)
 );
 
-/*transfer data from tsv to newly corrected table */
-INSERT INTO attribute (attributeText)
-SELECT DISTINCT Akas.attributes
-FROM akas_tsv AS Akas
-WHERE NOT EXISTS (SELECT * FROM attribute AS A WHERE A.attributeText = Akas.attributes);
+INSERT INTO titleInfoAttribute(titleInfoID, attributeID)
+SELECT DISTINCT AH.titleInfoId, A.attributeID
+FROM attributehelper AS AH, attributes AS A
+WHERE NOT EXISTS (SELECT TIA.titleInfoID, TIA.attributeID FROM attributes AS A, titleInfoAttribute AS TIA
+                  WHERE A.attributeID = TIA.attributeID AND  AH.titleInfoId = TIA.titleInfoId)
+AND A.attributeText = AH.attribute1;
 
-INSERT INTO titleAttribute(titleInfoID, attributeID)
-SELECT Ti.titleInfoID, A.attributeID
-FROM attribute AS A, titleInfo AS Ti, akas_tsv AS Akas
-WHERE Akas.titleID = Ti.titleID
-AND Akas.ordering = Ti.ordering
-AND A.attributeText = Akas.attributes;
+INSERT INTO titleInfoAttribute(titleInfoID, attributeID)
+SELECT DISTINCT AH.titleInfoId, A.attributeID
+FROM attributehelper AS AH, attributes AS A
+WHERE NOT EXISTS (SELECT TIA.titleInfoID, TIA.attributeID FROM attributes AS A, titleInfoAttribute AS TIA
+                  WHERE A.attributeID = TIA.attributeID AND  AH.titleInfoId = TIA.titleInfoId)
+AND A.attributeText = AH.attribute2;
+
+INSERT INTO titleInfoAttribute(titleInfoID, attributeID)
+SELECT DISTINCT AH.titleInfoId, A.attributeID
+FROM attributehelper AS AH, attributes AS A
+WHERE NOT EXISTS (SELECT TIA.titleInfoID, TIA.attributeID FROM attributes AS A, titleInfoAttribute AS TIA
+                  WHERE A.attributeID = TIA.attributeID AND  AH.titleInfoId = TIA.titleInfoId)
+AND A.attributeText = AH.attribute3;
+
+SELECT * from titleInfoAttribute;
 /********************************************************************************************************************************/
 
-/*********** mediaType // titleMediaType *************/
+/*********** attribute // titleAttribute *************/
+
+-- SELECT * FROM akas_tsv;
+
+-- Create Table attribute (
+-- 	attributeID int AUTO_INCREMENT,
+--     attributeText varchar(50),
+--     Constraint PK_attributeID Primary Key (attributeID)
+-- );
+
+-- Create Table titleAttribute (
+-- 	titleAttributeID int,
+--     titleInfoID int,
+--     attributeID int,
+--     Constraint PK_titleAttributeID Primary Key (titleAttributeID),
+--     Constraint FK_titleInfoID_ta Foreign Key (titleInfoID) REFERENCES titleInfo(titleInfoID),
+-- 	Constraint FK_attributeID_ta Foreign Key (attributeID) REFERENCES attribute(attributeID)
+-- );
+
+-- /*transfer data from tsv to newly corrected table */
+-- INSERT INTO attribute (attributeText)
+-- SELECT DISTINCT Akas.attributes
+-- FROM akas_tsv AS Akas
+-- WHERE NOT EXISTS (SELECT * FROM attribute AS A WHERE A.attributeText = Akas.attributes);
+
+-- INSERT INTO titleAttribute(titleInfoID, attributeID)
+-- SELECT Ti.titleInfoID, A.attributeID
+-- FROM attribute AS A, titleInfo AS Ti, akas_tsv AS Akas
+-- WHERE Akas.titleID = Ti.titleID
+-- AND Akas.ordering = Ti.ordering
+-- AND A.attributeText = Akas.attributes;
+
+/********************************************************************************************************************************/
+
+SELECT * FROM akas_tsv;
+
+/*********** mediaType // titleInfoMediaType *************/
 Create Table mediaType (
-	mediaTypeID int,
+	mediaTypeID int AUTO_INCREMENT,
     mediaTypeText varchar(50),
     Constraint PK_mediaTypeID Primary Key (mediaTypeID)
 );
 
-Create Table titleMediaType (
-	titleMediaTypeID int,
+Create Table titleInfoMediaType (
+	titleInfoMediaTypeID int AUTO_INCREMENT,
     titleInfoID int,
     mediaTypeID int,
-    Constraint PK_titleMediaTypeID Primary Key (titleMediaTypeID),
+    Constraint PK_titleInfoMediaTypeID Primary Key (titleInfoMediaTypeID),
     Constraint FK_titleInfoID_tit Foreign Key (titleInfoID) REFERENCES titleInfo(titleInfoID),
 	Constraint FK_mediaTypeID_tit Foreign Key (mediaTypeID) REFERENCES mediaType(mediaTypeID)
 );
@@ -203,14 +421,18 @@ Create Table titleMediaType (
 INSERT INTO mediaType (mediaTypeText)
 SELECT DISTINCT Akas.types
 FROM akas_tsv AS Akas
-WHERE NOT EXISTS (SELECT * FROM mediaType AS Mt WHERE A.mediaTypeText = Akas.types);
+WHERE NOT EXISTS (SELECT * FROM mediaType AS Mt WHERE Mt.mediaTypeText = Akas.types);
 
-INSERT INTO titleMediaType(titleInfoID, mediaTypeID)
+SELECT * FROM mediaType;
+
+INSERT INTO titleInfoMediaType(titleInfoID, mediaTypeID)
 SELECT Ti.titleInfoID, Mt.mediaTypeID
 FROM mediaType AS Mt, titleInfo AS Ti, akas_tsv AS Akas
 WHERE Akas.titleID = Ti.titleID
 AND Akas.ordering = Ti.ordering
 AND Mt.mediaTypeText = Akas.types;
+
+SELECT * FROM titleInfoMediaType;
 /********************************************************************************************************************************/
 
 /*********** KnownFor *************/

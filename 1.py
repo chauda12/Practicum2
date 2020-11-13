@@ -149,13 +149,13 @@ def insertNames():
             break
 
 def main():
-    #insertTitleBasic()
-    #insertAkas()
-    #insertNames()
-    #insertRatings()
-    #insertEpisode()
-    insertPrincipals()
-    #insertCrew()
+##    insertTitleBasic()
+    insertAkas()
+##    insertNames()
+##    insertRatings()
+##    insertEpisode()
+##    insertPrincipals()
+##    insertCrew()
     
     
 main()
