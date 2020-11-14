@@ -417,20 +417,45 @@ Create Table titleInfoMediaType (
 	Constraint FK_mediaTypeID_tit Foreign Key (mediaTypeID) REFERENCES mediaType(mediaTypeID)
 );
 
+Create Table mediaHelper(
+	titleInfoID int,
+    media1 varchar(40),
+    media2 varchar(40)
+);
+
+INSERT INTO mediaHelper(titleInfoId, media1, media2)
+SELECT titleInfoId, SUBSTRING_INDEX(types, ' ', 1) AS media1,
+SUBSTRING_INDEX(types, ' ', -1) AS media2
+FROM akas_tsv JOIN titleInfo ON akas_tsv.titleID = titleInfo.titleId;
+
+SELECT * FROM mediaHelper;
+
 /*transfer data from tsv to newly corrected table */
-INSERT INTO mediaType (mediaTypeText)
-SELECT DISTINCT Akas.types
-FROM akas_tsv AS Akas
-WHERE NOT EXISTS (SELECT * FROM mediaType AS Mt WHERE Mt.mediaTypeText = Akas.types);
+INSERT INTO mediaType(mediaTypeText)
+SELECT DISTINCT MH.media1
+FROM mediaHelper AS MH
+WHERE NOT EXISTS (SELECT * FROM mediaTypes AS MT WHERE MT.mediaTypeText = MH.media1);
+
+INSERT INTO mediaType(mediaTypeText)
+SELECT DISTINCT MH.media2
+FROM mediaHelper AS MH
+WHERE NOT EXISTS (SELECT * FROM mediaTypes AS MT WHERE MT.mediaTypeText = MH.media2);
 
 SELECT * FROM mediaType;
 
 INSERT INTO titleInfoMediaType(titleInfoID, mediaTypeID)
-SELECT Ti.titleInfoID, Mt.mediaTypeID
-FROM mediaType AS Mt, titleInfo AS Ti, akas_tsv AS Akas
-WHERE Akas.titleID = Ti.titleID
-AND Akas.ordering = Ti.ordering
-AND Mt.mediaTypeText = Akas.types;
+SELECT DISTINCT MH.titleInfoId, MT.mediaTypeID
+FROM mediaHelper AS MH, mediaType AS MT
+WHERE NOT EXISTS (SELECT TMT.titleInfoID, TMT.mediaTypeID FROM mediaType AS MT, titleMediaType AS TMT
+                  WHERE MT.mediaTypeID = TMT.mediaTypeID AND  MH.titleInfoId = TMT.titleInfoID)
+AND MT.mediaTypeText = MH.media1;
+
+INSERT INTO titleInfoMediaType(titleInfoID, mediaTypeID)
+SELECT DISTINCT MH.titleInfoId, MT.mediaTypeID
+FROM mediaHelper AS MH, mediaType AS MT
+WHERE NOT EXISTS (SELECT TMT.titleInfoID, TMT.mediaTypeID FROM mediaType AS MT, titleMediaType AS TMT
+                  WHERE MT.mediaTypeID = TMT.mediaTypeID AND  MH.titleInfoId = TMT.titleInfoID)
+AND MT.mediaTypeText = MH.media2;
 
 SELECT * FROM titleInfoMediaType;
 /********************************************************************************************************************************/
