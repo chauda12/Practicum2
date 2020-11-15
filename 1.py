@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 database = 'mysql+pymysql://root:5DL5oYhn5a2G@127.0.0.1/practicum2'
 
 def insertTitleBasic():
-    file = 'title.basics.tsv'
+    file = '../data/title.basics.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -28,7 +28,7 @@ def insertTitleBasic():
 
 
 def insertAkas():
-    file = 'akas.tsv'
+    file = '../data/akas.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -48,7 +48,7 @@ def insertAkas():
             break
 
 def insertCrew():
-    file = 'crew.tsv'
+    file = '../data/crew.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -68,7 +68,7 @@ def insertCrew():
             break
 
 def insertEpisode():
-    file = 'episodes.tsv'
+    file = '../data/episodes.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -88,7 +88,7 @@ def insertEpisode():
             break
 
 def insertPrincipals():
-    file = 'principals.tsv'
+    file = '../data/principals.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -109,7 +109,7 @@ def insertPrincipals():
 
 
 def insertRatings():
-    file = 'ratings.tsv'
+    file = '../data/ratings.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -129,7 +129,7 @@ def insertRatings():
             break
 
 def insertNames():
-    file = 'name.basics.tsv'
+    file = '../data/name.basics.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -149,13 +149,14 @@ def insertNames():
             break
 
 def main():
-##    insertTitleBasic()
-    insertAkas()
-##    insertNames()
-##    insertRatings()
-##    insertEpisode()
-##    insertPrincipals()
-##    insertCrew()
-    
-    
+    insertTitleBasic()
+
+##    insertAkas()
+    insertNames()
+    insertRatings()
+    insertEpisode()
+    insertPrincipals()
+    insertCrew()
+
+
 main()

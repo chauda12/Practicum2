@@ -65,6 +65,8 @@ Create Table person (
     Constraint PK_personID Primary Key (personID)
 );
 
+SELECT * FROM person;
+
 INSERT INTO person (personID, primaryName, birthYear, deathYear)
 SELECT nconst, primaryName, birthYear, deathYear
 FROM name_tsv;
@@ -150,144 +152,14 @@ SELECT tconst FROM crew_tsv;
 
 SELECT * FROM crew;
 
-Create Table crewhelper (
-	crewId varchar(40),
-    director1 varchar(40),
-	director2 varchar(40),
-    director3 varchar(40),
-    writer1 varchar(40),
-	writer2 varchar(40),
-    writer3 varchar(40)
-);
-
-INSERT INTO crewhelper(crewId, director1, director2, director3, writer1, writer2, writer3)
-SELECT crewId, SUBSTRING_INDEX(directors, ',', 1) AS director1,
-SUBSTRING_INDEX(SUBSTRING_INDEX(directors, ',', 2), ',', -1) AS director2,
-SUBSTRING_INDEX(directors, ',', -1) AS director3,
-SUBSTRING_INDEX(writers, ',', 1) AS writer1,
-SUBSTRING_INDEX(SUBSTRING_INDEX(writers, ',', 2), ',', -1) AS writer2,
-SUBSTRING_INDEX(writers, ',', -1) AS writer3
-FROM crew_tsv JOIN title ON crew_tsv.tconst = title.titleId JOIN crew ON crew_tsv.tconst = crew.titleId;
-
-SELECT * FROM crewhelper;
-
-/* director */
-
 Create Table directors (
-	directorID varchar(40),
-    Constraint directorID Primary Key (directorID)
+	titleID varchar(40),
+	personId varchar(40),
+    Constraint personID Primary Key (personID)
 );
-
-INSERT INTO directors(directorID)
-SELECT DISTINCT CH.director1
-FROM crewhelper AS CH
-WHERE CH.director1 IS NOT NULL AND
-NOT EXISTS (SELECT * FROM directors AS D WHERE D.directorId = CH.director1);
-
-INSERT INTO directors(directorID)
-SELECT DISTINCT CH.director2
-FROM crewhelper AS CH
-WHERE CH.director2 IS NOT NULL AND
-NOT EXISTS (SELECT * FROM directors AS D WHERE D.directorId = CH.director2);
-
-INSERT INTO directors(directorID)
-SELECT DISTINCT CH.director3
-FROM crewhelper AS CH
-WHERE CH.director3 IS NOT NULL AND
-NOT EXISTS (SELECT * FROM directors AS D WHERE D.directorId = CH.director3);
 
 SELECT * FROM directors;
 
-Create Table crewDirector (
-	crewDirectorID int AUTO_INCREMENT,
-    crewID int,
-    DirectorID varchar(40),
-    Constraint PK_crewDirectorID Primary Key (crewDirectorID),
-    Constraint FK_crewID_cd Foreign Key (crewID) References crew(crewID),
-	Constraint FK_DirectorID_cd Foreign Key (DirectorID) References directors(DirectorID)
-);
-
-INSERT INTO crewDirector(crewId, directorID)
-SELECT DISTINCT crewId, director1
-FROM crewhelper
-WHERE director1 IS NOT NULL AND
-NOT EXISTS (SELECT crewId, directorID FROM crewDirector WHERE directorID = crewhelper.director1);
-SELECT * FROM crewDirector;
-
-INSERT INTO crewDirector(crewId, directorID)
-SELECT DISTINCT crewId, director2
-FROM crewhelper
-WHERE director1 IS NOT NULL AND
-NOT EXISTS (SELECT crewId, directorID FROM crewDirector WHERE directorID = crewhelper.director2);
-SELECT * FROM crewDirector;
-
-INSERT INTO crewDirector(crewId, directorID)
-SELECT DISTINCT crewId, director3
-FROM crewhelper
-WHERE director1 IS NOT NULL AND
-NOT EXISTS (SELECT crewId, directorID FROM crewDirector WHERE directorID = crewhelper.director3);
-SELECT * FROM crewDirector;
-
-SELECT * from crewDirector;
-
-/* writer */
-
-Create Table writers (
-	writerID varchar(40),
-    Constraint writerID Primary Key (writerID)
-);
-
-INSERT INTO writers(writerID)
-SELECT DISTINCT CH.writer1
-FROM crewhelper AS CH
-WHERE CH.writer1 IS NOT NULL AND
-NOT EXISTS (SELECT * FROM writers AS W WHERE W.writerId = CH.writer1);
-
-INSERT INTO writers(writerID)
-SELECT DISTINCT CH.writer2
-FROM crewhelper AS CH
-WHERE CH.writer2 IS NOT NULL AND
-NOT EXISTS (SELECT * FROM writers AS W WHERE W.writerId = CH.writer2);
-
-INSERT INTO writers(writerID)
-SELECT DISTINCT CH.writer3
-FROM crewhelper AS CH
-WHERE CH.writer3 IS NOT NULL AND
-NOT EXISTS (SELECT * FROM writers AS W WHERE W.writerId = CH.writer3);
-
-SELECT * FROM writers;
-
-Create Table crewwriter (
-	crewwriterID int AUTO_INCREMENT,
-    crewID int,
-    writerID varchar(40),
-    Constraint PK_crewwriterID Primary Key (crewwriterID),
-    Constraint FK_crewID_cw Foreign Key (crewID) References crew(crewID),
-	Constraint FK_writerID_cw Foreign Key (writerID) References writers(writerID)
-);
-
-INSERT INTO crewwriter(crewId, writerID)
-SELECT DISTINCT crewId, writer1
-FROM crewhelper
-WHERE writer1 IS NOT NULL AND
-NOT EXISTS (SELECT crewId, writerID FROM crewwriter WHERE writerID = crewhelper.writer1);
-SELECT * FROM crewwriter;
-
-INSERT INTO crewwriter(crewId, writerID)
-SELECT DISTINCT crewId, writer2
-FROM crewhelper
-WHERE writer1 IS NOT NULL AND
-NOT EXISTS (SELECT crewId, writerID FROM crewwriter WHERE writerID = crewhelper.writer2);
-SELECT * FROM crewwriter;
-
-INSERT INTO crewwriter(crewId, writerID)
-SELECT DISTINCT crewId, writer3
-FROM crewhelper
-WHERE writer1 IS NOT NULL AND
-NOT EXISTS (SELECT crewId, writerID FROM crewwriter WHERE writerID = crewhelper.writer3);
-SELECT * FROM crewwriter;
-
-SELECT * from crewwriter;
 /********************************************************************************************************************************/
 
 /*********** Attribute, titleAttribute, AttributeHelper *************/
@@ -434,26 +306,26 @@ SELECT * FROM mediaHelper;
 INSERT INTO mediaType(mediaTypeText)
 SELECT DISTINCT MH.media1
 FROM mediaHelper AS MH
-WHERE NOT EXISTS (SELECT * FROM mediaTypes AS MT WHERE MT.mediaTypeText = MH.media1);
+WHERE NOT EXISTS (SELECT * FROM mediaType AS MT WHERE MT.mediaTypeText = MH.media1);
 
 INSERT INTO mediaType(mediaTypeText)
 SELECT DISTINCT MH.media2
 FROM mediaHelper AS MH
-WHERE NOT EXISTS (SELECT * FROM mediaTypes AS MT WHERE MT.mediaTypeText = MH.media2);
+WHERE NOT EXISTS (SELECT * FROM mediaType AS MT WHERE MT.mediaTypeText = MH.media2);
 
 SELECT * FROM mediaType;
 
 INSERT INTO titleInfoMediaType(titleInfoID, mediaTypeID)
 SELECT DISTINCT MH.titleInfoId, MT.mediaTypeID
 FROM mediaHelper AS MH, mediaType AS MT
-WHERE NOT EXISTS (SELECT TMT.titleInfoID, TMT.mediaTypeID FROM mediaType AS MT, titleMediaType AS TMT
+WHERE NOT EXISTS (SELECT TMT.titleInfoID, TMT.mediaTypeID FROM mediaType AS MT, titleInfoMediaType AS TMT
                   WHERE MT.mediaTypeID = TMT.mediaTypeID AND  MH.titleInfoId = TMT.titleInfoID)
 AND MT.mediaTypeText = MH.media1;
 
 INSERT INTO titleInfoMediaType(titleInfoID, mediaTypeID)
 SELECT DISTINCT MH.titleInfoId, MT.mediaTypeID
 FROM mediaHelper AS MH, mediaType AS MT
-WHERE NOT EXISTS (SELECT TMT.titleInfoID, TMT.mediaTypeID FROM mediaType AS MT, titleMediaType AS TMT
+WHERE NOT EXISTS (SELECT TMT.titleInfoID, TMT.mediaTypeID FROM mediaType AS MT, titleInfoMediaType AS TMT
                   WHERE MT.mediaTypeID = TMT.mediaTypeID AND  MH.titleInfoId = TMT.titleInfoID)
 AND MT.mediaTypeText = MH.media2;
 

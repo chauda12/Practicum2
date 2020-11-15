@@ -117,6 +117,10 @@ public class Directors {
         Directors directors = new Directors();
         directors.read();
         for(ArrayList<String> value: results){
+            if (value.get(1) == null)
+            {
+                continue;
+            }
             if(value.get(1).indexOf(',') != -1){
                 String[] helper = value.get(1).split(",");
                 for(String secondary: helper){
