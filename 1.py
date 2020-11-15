@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 database = 'mysql+pymysql://root:5DL5oYhn5a2G@127.0.0.1/practicum2'
 
 def insertTitleBasic():
-    file = '../data/title.basics.tsv'
+    file = 'title.basics.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -28,7 +28,7 @@ def insertTitleBasic():
 
 
 def insertAkas():
-    file = '../data/akas.tsv'
+    file = 'akas.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -48,7 +48,7 @@ def insertAkas():
             break
 
 def insertCrew():
-    file = '../data/crew.tsv'
+    file = 'crew.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -68,7 +68,7 @@ def insertCrew():
             break
 
 def insertEpisode():
-    file = '../data/episodes.tsv'
+    file = 'episodes.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -88,7 +88,7 @@ def insertEpisode():
             break
 
 def insertPrincipals():
-    file = '../data/principals.tsv'
+    file = 'principals.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -109,7 +109,7 @@ def insertPrincipals():
 
 
 def insertRatings():
-    file = '../data/ratings.tsv'
+    file = 'ratings.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
@@ -129,7 +129,7 @@ def insertRatings():
             break
 
 def insertNames():
-    file = '../data/name.basics.tsv'
+    file = 'name.basics.tsv'
 
     csv_database = create_engine(database)
     dbConnection = csv_database.connect()
