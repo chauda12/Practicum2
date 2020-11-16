@@ -2,7 +2,7 @@ DELIMITER $$
 CREATE TRIGGER insert_age
 BEFORE INSERT ON person FOR EACH ROW
 BEGIN
-    SET NEW.age = YEAR(CURDATE()) - OLD.birthYear;
+    SET NEW.age = YEAR(CURDATE()) - NEW.birthYear;
 END$$
 
 CREATE TRIGGER insert_num_movies
