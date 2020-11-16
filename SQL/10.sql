@@ -1,10 +1,8 @@
+DROP PROCEDURE IF EXISTS deleteActor;
+
 DELIMITER $$
-CREATE PROCEDURE deleteActor(primaryName varchar(50))
-BEGIN
-	DECLARE personID varchar(40);
-    
-    SELECT P.personID FROM person AS P WHERE P.primaryName = primaryName;
-    
+CREATE PROCEDURE deleteActor(personID varchar(50))
+BEGIN    
     DELETE FROM knownFor AS KF
     WHERE KF.personID = personID;
     
