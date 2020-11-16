@@ -1,9 +1,7 @@
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Set;
 
-public class Directors {
+public class Writers {
 
     private Connection connect = null;
     private Statement statement = null;
@@ -19,13 +17,13 @@ public class Directors {
     private static String result;
     private static int mediaIndex;
 
-    public void insertIntoDirectors(String titleID, String personID) {
+    public void insertIntoWriters(String titleID, String personID) {
 
         try {
             connect = DriverManager.getConnection(url, user, pass);
             statement = connect.createStatement();
 
-            preparedStatement = connect.prepareStatement("INSERT INTO directors(titleID, personID) " +
+            preparedStatement = connect.prepareStatement("INSERT INTO writers(titleID, personID) " +
                     "VALUES (?, ?)");
 
             preparedStatement.setString(1, titleID);
@@ -68,7 +66,7 @@ public class Directors {
             connect = DriverManager.getConnection(url, user, pass);
             statement = connect.createStatement();
 
-            String statement = "SELECT C.tconst, C.directors " +
+            String statement = "SELECT C.tconst, C.writers " +
                     "FROM crew_tsv AS C";
             PreparedStatement preparedStatement = connect.prepareStatement(statement);
             resultSet = preparedStatement.executeQuery();
@@ -114,8 +112,8 @@ public class Directors {
 
     public static void main(String[] arg) throws Exception {
 
-        Directors directors = new Directors();
-        directors.read();
+        Writers writers = new Writers();
+        writers.read();
         for(ArrayList<String> value: results){
             if (value.get(1) == null)
             {
@@ -124,11 +122,11 @@ public class Directors {
             if(value.get(1).indexOf(',') != -1){
                 String[] helper = value.get(1).split(",");
                 for(String secondary: helper){
-                    directors.insertIntoDirectors(value.get(0), secondary);
+                    writers.insertIntoWriters(value.get(0), secondary);
                 }
             }
             else{
-                directors.insertIntoDirectors(value.get(0), value.get(1));
+                writers.insertIntoWriters(value.get(0), value.get(1));
             }
         }
 
